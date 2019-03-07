@@ -1,7 +1,7 @@
 using CodeTools, LNR, Media
 using CodeTools: getthing, getmodule
 import REPL
-
+using Dates
 using Logging: with_logger, current_logger
 using .Progress: JunoProgressLogger
 
@@ -123,6 +123,7 @@ handle("evalall") do data
           result = nothing
           try
             result = include_string(mod, code, path)
+            println("$(now()) atom.jl include_string done.")
           catch e
             bt = catch_backtrace()
             st = cliptrace(stacktrace(bt))
@@ -140,11 +141,13 @@ handle("evalall") do data
           end
           Base.invokelatest() do
             @ierrs displayandrender(result)
+          println("$(now()) atom.jl invokelatest done.")
           end
         end
       end
     end
     unlock(evallock)
+    println("$(now()) atom.jl unlock done.")
   end
   return
 end

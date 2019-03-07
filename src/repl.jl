@@ -1,5 +1,6 @@
 using REPL
 using REPL.LineEdit
+using Dates
 # FIXME: Should refactor all REPL related functions into a struct that keeps track
 #        of global state (terminal size, current prompt, current module etc).
 # FIXME: Find a way to reprint what's currently entered in the REPL after changing
@@ -85,13 +86,17 @@ function hideprompt(f)
 
   print(stdout, "\e[1K\r")
   r = f()
+  println("$(now()) hide prompt: r=f()")
 
   flush(stdout)
   flush(stderr)
   sleep(0.05)
+  println("$(now()) hide prompt: flush and sleep")
 
   pos = @rpc cursorpos()
+  println("$(now()) hide prompt: rpc cursorpos")
   pos[1] != 0 && println()
+  println("$(now()) hide prompt: println")
 
   # restore prompt
   if applicable(LineEdit.write_prompt, stdout, mode)
@@ -102,11 +107,17 @@ function hideprompt(f)
     printstyled(stdout, current_prompt, color=:green)
   end
 
+  println("$(now()) hide prompt: restore")
+
   truncate(LineEdit.buffer(mistate), 0)
+  println("$(now()) hide prompt: trunc")
+
 
   # restore input buffer
   LineEdit.edit_insert(LineEdit.buffer(mistate), buf)
+  println("$(now()) hide prompt: restore input buffer")
   LineEdit.refresh_multi_line(mistate)
+  println("$(now()) hide prompt done.")
   r
 end
 
